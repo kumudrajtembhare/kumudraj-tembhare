@@ -1,0 +1,15 @@
+openai
+python-dotenv
+tiktoken
+semantic-kernel==0.4.0.dev0
+Jinja2
+pyodbc
+streamlit
+azure.identity
+azure.keyvault.secrets
+promptlayer
+prettytable
+sqlparse
+matplotlib
+azure.keyvault.secrets
+azure.identity
