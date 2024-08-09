@@ -231,11 +231,6 @@ def main():
     api_key = os.getenv('AZURE_OPENAI_API_KEY')
     endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
 
-    # Debugging: Print the values of the environment variables
-    st.write(f"Deployment: {deployment}")
-    st.write(f"API Key: {api_key}")
-    st.write(f"Endpoint: {endpoint}")
-
     # Check if any of these are None
     if not deployment or not api_key or not endpoint:
         st.error("One or more environment variables are not set. Please check your configuration.")
