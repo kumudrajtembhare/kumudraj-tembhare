@@ -92,6 +92,37 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+def save_interaction_to_db(user_prompt, sql_query, data_output, chart_img=None):
+    server_name = os.getenv('SERVER_NAME')
+    database_name = os.getenv('DATABASE_NAME')
+    username = os.getenv('SQLADMIN_USER')
+    password = os.getenv('SQL_PASSWORD')
+    
+    conn = pyodbc.connect(
+        'DRIVER={driver};SERVER={server_name};DATABASE={database_name};UID={username};PWD={password}'.format(
+            driver="ODBC Driver 18 for SQL Server", server_name=server_name, database_name=database_name, username=username, password=password
+        )
+    )
+    
+    cursor = conn.cursor()
+    try:
+        # Convert data_output to JSON string
+        data_output_json = json.dumps(data_output.to_dict())
+        
+        # Execute the insert statement
+        cursor.execute("""
+            INSERT INTO STAGE.interactions (user_prompt, regenerate_flag, sql_query, data_output, chart_image)
+            VALUES (?, ?, ?, ?, ?)
+        """, (user_prompt, 'N', sql_query, data_output_json, chart_img))
+        
+        conn.commit()  # Commit the transaction
+    except Exception as e:
+        print(f"Failed to save interaction: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
+
 def get_link_from_prompt(prompt):
     for link, keywords in links.items():
         for keyword in keywords:
@@ -310,6 +341,9 @@ def main():
                         
                         st.markdown(button_css, unsafe_allow_html=True)
                         st.write("For more info, please click on the" + " " + PowerBI_markdown_link + " " + SharePoint_markdown_link, unsafe_allow_html=True)
+
+            # Save the interaction
+            save_interaction_to_db(prompt, sql_query, result, )                                        
 
 if __name__ == "__main__":
     start = time.time()
